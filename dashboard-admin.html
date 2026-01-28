@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Admin | MINUMSHOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:linear-gradient(120deg,#fff7ed,#ffedd5);
+}
+
+/* HEADER */
+header{
+  background:#fb923c;
+  color:white;
+  padding:20px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10
+}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 20px;
+  gap:10px;
+  flex-wrap:wrap
+}
+.nav button{
+  background:white;
+  color:#fb923c;
+  border:none;
+  padding:8px 18px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.15);
+  transition:.3s
+}
+.nav button:hover{
+  transform:translateY(-3px)
+}
+
+/* DASHBOARD */
+.container{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 20px
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.12);
+  text-align:center
+}
+.card h2{
+  margin:10px 0;
+  color:#1e40af
+}
+
+/* CHART */
+.chart{
+  margin-top:40px;
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.12)
+}
+.bar{
+  height:28px;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  margin-bottom:10px;
+  border-radius:8px;
+  color:white;
+  font-weight:700;
+  padding-left:10px;
+  display:flex;
+  align-items:center;
+  animation:grow .8s ease
+}
+@keyframes grow{
+  from{width:0}
+}
+
+/* FOOTER */
+footer{
+  text-align:center;
+  padding:25px;
+  color:#64748b;
+  font-size:14px
+}
+</style>
+</head>
+
+<body>
+
+<script>
+/* AUTH */
+if(localStorage.getItem("role")!=="admin"){
+  alert("ADMIN ONLY");
+  location.href="index.html";
+}
+</script>
+
+<header>
+  <h1>📊 Dashboard Laporan Admin</h1>
+
+  <div class="nav">
+    <button onclick="location.href='index.html'">🏠 Beranda</button>
+    <button onclick="location.href='product-admin.html'">📦 Kelola Produk</button>
+    <button onclick="resetStok()">♻ Reset Stok</button>
+    <button onclick="logout()">🚪 Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Produk</h3>
+      <h2 id="totalProduk">0</h2>
+    </div>
+    <div class="card">
+      <h3>Total Transaksi</h3>
+      <h2 id="totalTransaksi">0</h2>
+    </div>
+    <div class="card">
+      <h3>Total Pendapatan</h3>
+      <h2 id="totalPendapatan">Rp 0</h2>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart">
+    <h3>📈 Chart Penjualan Produk</h3>
+    <div id="chart"></div>
+  </div>
+
+</div>
+
+<footer>
+  Created by ASKAR<br>
+  Hanya Untuk Demo E-Commerce Informatika
+</footer>
+
+<script>
+/* DATA */
+const products = JSON.parse(localStorage.getItem("products")) || [];
+const invoices = JSON.parse(localStorage.getItem("invoiceHistory")) || [];
+
+/* SUMMARY */
+document.getElementById("totalProduk").innerText = products.length;
+document.getElementById("totalTransaksi").innerText = invoices.length;
+
+let totalUang = 0;
+invoices.forEach(i=>{
+  i.cart.forEach(p=>{
+    totalUang += p.harga * p.qty;
+  });
+});
+document.getElementById("totalPendapatan").innerText =
+  "Rp " + totalUang;
+
+/* CHART */
+const chart=document.getElementById("chart");
+
+products.forEach(p=>{
+  const terjual = invoices.reduce((a,inv)=>{
+    const f = inv.cart.find(x=>x.id===p.id);
+    return a + (f?f.qty:0);
+  },0);
+
+  if(terjual>0){
+    chart.innerHTML+=`
+      <div class="bar" style="width:${Math.min(terjual*20,100)}%">
+        ${p.nama} (${terjual})
+      </div>`;
+  }
+});
+
+/* RESET STOK */
+function resetStok(){
+  if(!confirm("Reset stok semua produk?")) return;
+  products.forEach(p=>p.stok=10);
+  localStorage.setItem("products",JSON.stringify(products));
+  alert("✅ Stok berhasil direset");
+}
+
+/* LOGOUT */
+function logout(){
+  if(confirm("Logout admin?")){
+    localStorage.clear();
+    location.href="login.html";
+  }
+}
+</script>
+
+</body>
+</html>

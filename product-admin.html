@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Admin Produk | MINUMSHOP</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#fef3c7;
+  padding-bottom:90px;
+}
+header{
+  background:#92400e;
+  color:white;
+  padding:20px;
+  text-align:center
+}
+.container{max-width:950px;margin:20px auto}
+
+/* CARD */
+.card{
+  background:white;
+  padding:15px;
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+  transition:.3s;
+}
+.card.dragging{opacity:.4;transform:scale(.98)}
+.card.out{opacity:.55;filter:grayscale(1)}
+
+.card img{
+  width:80px;
+  height:80px;
+  border-radius:12px;
+  object-fit:cover
+}
+
+.info{
+  display:flex;
+  gap:15px;
+  align-items:center
+}
+
+/* BADGE */
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  margin-top:6px
+}
+.habis{
+  background:#ef4444;
+  color:white;
+  animation:blink 1s infinite
+}
+.ready{
+  background:#22c55e;
+  color:white
+}
+@keyframes blink{50%{opacity:.4}}
+
+/* BUTTON */
+button{
+  padding:6px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  margin-left:4px
+}
+.add{background:#22c55e;color:white}
+.edit{background:#3b82f6;color:white}
+.delete{background:#ef4444;color:white}
+.reset{background:#0ea5e9;color:white}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:15px;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap
+}
+input{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid #ccc
+}
+
+/* FLOAT NAV */
+.fab-nav{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:15px
+}
+.fab-nav button{
+  padding:14px 22px;
+  border-radius:999px;
+  color:white;
+  font-size:15px;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  transition:.3s
+}
+.fab-nav button:hover{
+  transform:translateY(-5px) scale(1.05)
+}
+.back{background:#64748b}
+.home{background:#22c55e}
+.next{background:#f97316}
+</style>
+</head>
+
+<body>
+
+<script>
+/* ===== AUTH ===== */
+if(localStorage.getItem("role")!=="admin"){
+  alert("Akses ditolak");
+  location.href="index.html";
+}
+
+/* ===== DATA ===== */
+let products = JSON.parse(localStorage.getItem("products")) || [
+  {id:1,nama:"Es Jeruk",harga:6000,stok:10,img:"es-jeruk.jpg"},
+  {id:2,nama:"Kopi Susu",harga:8000,stok:0,img:"kopi-susu.jpg"},
+  {id:3,nama:"Es Alpukat",harga:10000,stok:8,img:"es-alpukat.jpg"},
+  {id:4,nama:"Bajigur Keju",harga:12000,stok:0,img:"bajigur-keju.jpg"}
+];
+
+let adminLogs = JSON.parse(localStorage.getItem("adminLogs")) || [];
+let dragId = null;
+
+/* ===== SAVE ===== */
+function save(){
+  localStorage.setItem("products",JSON.stringify(products));
+  localStorage.setItem("adminLogs",JSON.stringify(adminLogs));
+  render();
+}
+
+/* ===== RENDER ===== */
+function render(filter=""){
+  const list=document.getElementById("list");
+  list.innerHTML="";
+
+  products
+    .filter(p=>p.nama.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(p=>{
+      list.innerHTML+=`
+      <div class="card ${p.stok===0?'out':''}" draggable="true"
+        ondragstart="dragStart(${p.id})"
+        ondragover="event.preventDefault()"
+        ondrop="drop(${p.id})">
+
+        <div class="info">
+          <img src="${p.img}">
+          <div>
+            <b>${p.nama}</b><br>
+            Rp ${p.harga} | Stok ${p.stok}
+            <div class="badge ${p.stok===0?'habis':'ready'}">
+              ${p.stok===0?'HABIS':'TERSEDIA'}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <button class="reset" onclick="resetProduk(${p.id})">Reset</button>
+          <button class="edit" onclick="edit(${p.id})">Edit</button>
+          <button class="delete" onclick="hapus(${p.id})">Hapus</button>
+        </div>
+      </div>`;
+    });
+}
+
+/* ===== DRAG & DROP ===== */
+function dragStart(id){dragId=id}
+function drop(targetId){
+  const from=products.findIndex(p=>p.id===dragId);
+  const to=products.findIndex(p=>p.id===targetId);
+  const item=products.splice(from,1)[0];
+  products.splice(to,0,item);
+  save();
+}
+
+/* ===== CRUD ===== */
+function tambah(){
+  const nama=prompt("Nama produk:");
+  const harga=prompt("Harga:");
+  const stok=prompt("Stok:");
+  const img=prompt("Nama file gambar:");
+  if(!nama||!harga||!stok||!img)return;
+
+  products.push({
+    id:Date.now(),
+    nama,
+    harga:+harga,
+    stok:+stok,
+    img
+  });
+  save();
+}
+
+function edit(id){
+  const p=products.find(x=>x.id===id);
+  p.nama=prompt("Nama:",p.nama);
+  p.harga=+prompt("Harga:",p.harga);
+  p.stok=+prompt("Stok:",p.stok);
+  p.img=prompt("Gambar:",p.img);
+  save();
+}
+
+function hapus(id){
+  if(confirm("Hapus produk?")){
+    products=products.filter(p=>p.id!==id);
+    save();
+  }
+}
+
+/* ===== RESET PER PRODUK ===== */
+function resetProduk(id){
+  const p=products.find(x=>x.id===id);
+  if(!p)return;
+
+  const jumlah=prompt("Masukkan stok baru:",p.stok);
+  if(jumlah===null)return;
+
+  adminLogs.push({
+    waktu:new Date().toLocaleString(),
+    aksi:"RESET STOK",
+    produk:p.nama,
+    dari:p.stok,
+    ke:Number(jumlah)
+  });
+
+  p.stok=Number(jumlah);
+  save();
+}
+
+/* ===== RESET SEMUA ===== */
+function resetStok(){
+  if(!confirm("Reset semua stok produk?"))return;
+
+  products.forEach(p=>{
+    adminLogs.push({
+      waktu:new Date().toLocaleString(),
+      aksi:"RESET SEMUA",
+      produk:p.nama,
+      dari:p.stok,
+      ke:10
+    });
+    p.stok=10;
+  });
+
+  save();
+  alert("✅ Semua stok berhasil direset");
+}
+
+render();
+</script>
+
+<header>
+  <h1>Dashboard Admin 🧑‍💼</h1>
+  <button class="add" onclick="tambah()">➕ Tambah Produk</button>
+</header>
+
+<div class="container">
+  <div class="nav">
+    <input placeholder="Cari produk..." oninput="render(this.value)">
+    <div>
+      <button class="reset" onclick="resetStok()">♻ Reset Semua Stok</button>
+      <button onclick="location.href='admin-report.html'">📊 Laporan</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<div class="fab-nav">
+  <button class="back" onclick="history.back()">⬅</button>
+  <button class="home" onclick="location.href='index.html'">🏠</button>
+  <button class="next" onclick="location.href='product-buyer.html'">➡</button>
+</div>
+
+</body>
+</html>

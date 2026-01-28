@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Checkout | MINUMSHOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:Poppins;
+  background:linear-gradient(120deg,#fff7ed,#ffedd5);
+  margin:0;padding:20px
+}
+h2{text-align:center}
+
+.card{
+  background:white;
+  padding:18px;
+  border-radius:18px;
+  margin-bottom:15px;
+  box-shadow:0 15px 35px rgba(0,0,0,.12)
+}
+.row{display:flex;justify-content:space-between;align-items:center}
+
+.qty button{
+  background:#fb923c;color:white;border:none;
+  padding:6px 12px;border-radius:8px;
+  font-weight:700;cursor:pointer
+}
+
+select,input{
+  width:100%;padding:10px;margin-top:8px;
+  border-radius:10px;border:1px solid #ccc;font-size:15px
+}
+
+.total{
+  font-size:20px;
+  font-weight:700;
+  text-align:right;
+  margin-top:10px
+}
+
+.checkout{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;border:none;padding:14px;width:100%;
+  border-radius:999px;font-size:18px;
+  font-weight:700;cursor:pointer;margin-top:20px
+}
+
+.pay-box{
+  margin-top:12px;padding:14px;border-radius:14px;
+  background:#f8fafc;border:1px dashed #cbd5e1
+}
+
+.kembali{color:#16a34a;font-weight:700}
+.kurang{color:#dc2626;font-weight:700}
+
+.nav-btn{
+  width:100%;padding:12px;margin-top:10px;
+  border-radius:999px;border:none;
+  font-weight:700;cursor:pointer
+}
+.back{background:#64748b;color:white}
+.logout{background:#ef4444;color:white}
+
+.loading{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;justify-content:center;
+  align-items:center;color:white;
+  font-size:22px;z-index:99
+}
+.loading.show{display:flex}
+</style>
+</head>
+
+<body>
+
+<div class="loading" id="load">⏳ Memproses Checkout...</div>
+
+<h2>🧾 Checkout</h2>
+
+<div id="list"></div>
+
+<div class="card">
+  <b>Metode Pembayaran</b>
+  <select id="payMethod" onchange="hitung()">
+    <option value="tf">Transfer</option>
+    <option value="langsung">Bayar Langsung</option>
+    <option value="cod">COD</option>
+  </select>
+
+  <div id="codBox" style="display:none">
+    <input id="jarak" placeholder="Jarak (KM)" oninput="hitung()">
+  </div>
+
+  <div id="cashBox" class="pay-box" style="display:none">
+    <input id="bayar" placeholder="Uang dibayarkan" oninput="hitung()">
+    <div id="info"></div>
+  </div>
+</div>
+
+<p class="total" id="totalBox"></p>
+
+<button class="checkout" onclick="checkout()">✅ Bayar & Cetak Invoice</button>
+<button class="nav-btn back" onclick="kembali()">⬅ Kembali</button>
+<button class="nav-btn logout" onclick="logout()">🚪 Logout</button>
+
+<script>
+/* ===== AUTH ===== */
+if(localStorage.getItem("role")!=="buyer"){
+  alert("Akses ditolak");
+  location.href="login.html";
+}
+
+const user = localStorage.getItem("currentUser");
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+let grandTotal = 0;
+
+/* ===== RENDER CART ===== */
+function render(){
+  const l=document.getElementById("list");
+  l.innerHTML="";
+  if(cart.length===0){
+    l.innerHTML="<p style='text-align:center'>🛒 Keranjang kosong</p>";
+    return;
+  }
+  cart.forEach((p,i)=>{
+    l.innerHTML+=`
+    <div class="card">
+      <div class="row">
+        <b>${p.nama}</b>
+        Rp ${p.harga}
+      </div>
+      <div class="row qty">
+        <div>
+          <button onclick="ubah(${i},-1)">−</button>
+          ${p.qty}
+          <button onclick="ubah(${i},1)">+</button>
+        </div>
+        <b>Rp ${p.harga*p.qty}</b>
+      </div>
+    </div>`;
+  });
+}
+
+/* ===== UPDATE QTY ===== */
+function ubah(i,n){
+  const p=cart[i];
+  const stok = products.find(x=>x.id===p.id)?.stok || p.qty;
+  p.qty+=n;
+  if(p.qty<=0) cart.splice(i,1);
+  if(p.qty>stok) p.qty=stok;
+  localStorage.setItem("cart",JSON.stringify(cart));
+  render();hitung();
+}
+
+/* ===== HITUNG TOTAL ===== */
+function hitung(){
+  let total=cart.reduce((a,b)=>a+b.harga*b.qty,0);
+  const pay=payMethod.value;
+
+  codBox.style.display=pay==="cod"?"block":"none";
+  cashBox.style.display=(pay!=="tf")?"block":"none";
+
+  let ongkir=0;
+  if(pay==="cod"){
+    const j=+jarak.value||0;
+    if(j>0) ongkir=j<=5?5000:5000+(j-5)*2000;
+  }
+
+  grandTotal=total+ongkir;
+  totalBox.innerText="Total Bayar: Rp "+grandTotal;
+
+  if(cashBox.style.display==="block"){
+    const uang=+bayar.value||0;
+    info.innerHTML=uang>=grandTotal
+      ?`<p class="kembali">Kembalian: Rp ${uang-grandTotal}</p>`
+      :uang>0?`<p class="kurang">Uang kurang: Rp ${grandTotal-uang}</p>`:"";
+  }
+}
+
+/* ===== CHECKOUT ===== */
+function checkout(){
+  if(cart.length===0) return alert("Keranjang kosong");
+
+  const pay=payMethod.value;
+  const uang=+bayar.value||0;
+  if(pay!=="tf" && uang<grandTotal)
+    return alert("Uang kurang");
+
+  load.classList.add("show");
+
+  setTimeout(()=>{
+    /* KURANGI STOK */
+    cart.forEach(c=>{
+      const p=products.find(x=>x.id===c.id);
+      if(p) p.stok-=c.qty;
+    });
+
+    /* SIMPAN INVOICE (SINKRON) */
+    invoices.push({
+      user,
+      cart:JSON.parse(JSON.stringify(cart)),
+      grand:grandTotal,
+      metode:pay,
+      bayar:uang,
+      kembalian:uang-grandTotal,
+      tanggal:new Date().toLocaleString()
+    });
+
+    localStorage.setItem("products",JSON.stringify(products));
+    localStorage.setItem("invoices",JSON.stringify(invoices));
+    localStorage.removeItem("cart");
+
+    location.href="invoice.html";
+  },1200);
+}
+
+/* ===== NAV ===== */
+function kembali(){location.href="product-buyer.html"}
+function logout(){
+  if(confirm("Logout dan batalkan transaksi?")){
+    localStorage.clear();
+    location.href="login.html";
+  }
+}
+
+render();
+hitung();
+</script>
+
+</body>
+</html>

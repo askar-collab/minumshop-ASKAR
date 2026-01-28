@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>MINUMSHOP</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(120deg,#fff7ed,#ffedd5,#fff7ed);
+  background-size:400% 400%;
+  animation:bgMove 12s ease infinite;
+  color:#1f2937;
+}
+@keyframes bgMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* SPLASH */
+#splash{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#fb923c,#f97316);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:42px;
+  font-family:'Pacifico',cursive;
+  z-index:999;
+}
+
+/* NAVBAR */
+nav{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(10px);
+  padding:18px 36px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.logo img{width:58px}
+.logo span{
+  font-family:'Pacifico',cursive;
+  font-size:36px;
+  color:#7c2d12;
+}
+nav a{
+  margin-left:16px;
+  padding:10px 24px;
+  border-radius:999px;
+  font-weight:700;
+  text-decoration:none;
+  color:#7c2d12;
+  transition:.3s;
+}
+nav a:hover{
+  background:#fdba74;
+  color:white;
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+/* MARQUEE */
+marquee{
+  background:#1e3a8a;
+  color:white;
+  padding:12px;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* HERO */
+.hero{
+  text-align:center;
+  margin:120px auto 80px;
+  padding:0 20px;
+}
+.hero h1{
+  font-size:58px;
+  color:#1e40af;
+}
+.hero p{
+  font-size:22px;
+  max-width:720px;
+  margin:auto;
+  line-height:1.7;
+  color:#475569;
+}
+
+/* CTA */
+.cta{margin-top:40px}
+.cta button{
+  background:linear-gradient(135deg,#fb923c,#f97316);
+  border:none;
+  padding:18px 42px;
+  border-radius:999px;
+  font-size:20px;
+  font-weight:700;
+  color:white;
+  cursor:pointer;
+  transition:.3s;
+  box-shadow:0 14px 35px rgba(249,115,22,.45);
+}
+.cta button:hover{
+  transform:translateY(-5px) scale(1.05);
+  box-shadow:0 22px 45px rgba(249,115,22,.7);
+}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:30px;
+  max-width:1000px;
+  margin:0 auto 100px;
+  padding:0 20px;
+}
+.card{
+  background:white;
+  padding:28px;
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.08);
+  text-align:center;
+  transition:.3s;
+  position:relative;
+}
+.card:hover{transform:translateY(-8px)}
+.card h3{
+  font-size:24px;
+  margin-bottom:10px;
+  color:#1e3a8a;
+}
+.card p{
+  color:#64748b;
+  font-size:16px;
+}
+
+/* 🔥 ADMIN BADGE */
+.badge-admin{
+  position:absolute;
+  top:14px;
+  right:14px;
+  background:#ef4444;
+  color:white;
+  font-size:11px;
+  font-weight:700;
+  padding:6px 12px;
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(239,68,68,.5);
+  animation:pulse 1.4s infinite;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+
+/* FOOTER */
+footer{
+  background:#1e293b;
+  color:#e5e7eb;
+  text-align:center;
+  padding:30px 20px;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="splash">MINUMSHOP 🍹</div>
+
+<script>
+setTimeout(()=>document.getElementById("splash").style.display="none",1800);
+if(localStorage.getItem("loggedIn")!=="true") location.href="login.html";
+</script>
+
+<nav>
+  <div class="logo">
+    <img src="logo.png">
+    <span>MINUMSHOP</span>
+  </div>
+  <div>
+    <a href="#" onclick="goDashboard()">Dashboard</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</nav>
+
+<marquee>
+🔥 CARI MINUMAN YANG SEGER-SEGER KUNJUNGI MINUMSHOP • seteguk Minuman Segar mengubah Semangat Anda 🔥
+</marquee>
+
+<section class="hero">
+  <h1>Selamat Datang 🍹</h1>
+  <p id="info"></p>
+  <div class="cta">
+    <button onclick="goDashboard()">Masuk ke Dashboard</button>
+  </div>
+</section>
+
+<section class="cards">
+  <div class="card">
+    <h3>📦 Produk Segar</h3>
+    <p>Pilihan minuman terbaik dengan kualitas premium.</p>
+  </div>
+
+  <div class="card" id="adminCard">
+    <span class="badge-admin" id="adminBadge">ADMIN ONLY</span>
+    <h3>📊 Admin Panel</h3>
+    <p>Kelola stok, pesanan, dan laporan penjualan.</p>
+  </div>
+
+  <div class="card">
+    <h3>🛒 Belanja Mudah</h3>
+    <p>Pengalaman belanja cepat, ringan, dan nyaman.</p>
+  </div>
+</section>
+
+<footer>
+  Created by ASKAR<br>
+  Hanya Untuk Demo E-Commerce Informatika
+</footer>
+
+<script>
+const role=localStorage.getItem("role");
+
+document.getElementById("info").innerText=
+role==="admin"
+?"Anda login sebagai ADMIN. Kelola sistem dengan mudah & elegan."
+:"Nikmati minuman segar favorit Anda hari ini.";
+
+if(role!=="admin"){
+  document.getElementById("adminBadge").style.display="none";
+}
+
+function goDashboard(){
+  location.href=role==="admin"
+  ?"product-admin.html"
+  :"product-buyer.html";
+}
+
+function logout(){
+  if(confirm("Yakin ingin logout?")){
+    localStorage.clear();
+    document.body.style.opacity="0";
+    setTimeout(()=>location.href="login.html",400);
+  }
+}
+</script>
+
+</body>
+</html>

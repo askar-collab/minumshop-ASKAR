@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | MINUMSHOP</title>
+
+  <!-- GOOGLE FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+      min-height: 100vh;
+    }
+
+    nav {
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      padding: 16px 32px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .logo {
+      font-family: 'Pacifico', cursive;
+      font-size: 32px;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      margin-top: 80px;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      padding: 38px;
+      border-radius: 28px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      animation: fadeUp .8s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      color: #0369a1;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      border: 1px solid #bae6fd;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56,189,248,0.45);
+    }
+
+    .password-box {
+      position: relative;
+    }
+
+    .password-box span {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .3s;
+      margin-top: 6px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(14,165,233,0.5);
+    }
+
+    .login-box {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .login-box a {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 18px;
+      border-radius: 12px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">MINUMSHOP</div>
+</nav>
+
+<div class="container">
+  <div class="card">
+    <h2>📝 Daftar Akun</h2>
+    <div class="subtitle">Buat akun pembeli baru</div>
+
+    <input id="username" placeholder="Username">
+    
+    <div class="password-box">
+      <input id="password" type="password" placeholder="Password">
+      <span onclick="togglePass('password')">👁️</span>
+    </div>
+
+    <div class="password-box">
+      <input id="confirm" type="password" placeholder="Konfirmasi Password">
+      <span onclick="togglePass('confirm')">👁️</span>
+    </div>
+
+    <button onclick="register()">Daftar Sekarang</button>
+
+    <div class="login-box">
+      Sudah punya akun?
+      <br>
+      <a href="login.html">Login</a>
+    </div>
+
+    <div class="footer">
+      MINUMSHOP • Demo Informatika
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePass(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === "password" ? "text" : "password";
+}
+
+function register() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const confirm  = document.getElementById("confirm").value.trim();
+
+  if (!username || !password || !confirm) {
+    alert("Semua field wajib diisi");
+    return;
+  }
+
+  if (password.length < 5) {
+    alert("Password minimal 5 karakter");
+    return;
+  }
+
+  if (password !== confirm) {
+    alert("Konfirmasi password tidak sama");
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+
+  if (users.find(u => u.username === username)) {
+    alert("Username sudah digunakan");
+    return;
+  }
+
+  users.push({ username, password });
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Registrasi berhasil, silakan login");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

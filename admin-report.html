@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan Penjualan | ADMIN</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Poppins;
+  background:linear-gradient(135deg,#ecfeff,#fff7ed,#ffe4e6);
+  min-height:100vh;
+  color:#1f2937;
+}
+
+/* ===== HEADER ===== */
+header{
+  background:linear-gradient(135deg,#38bdf8,#fb7185);
+  color:white;
+  padding:30px 20px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+header h1{margin:0;font-size:38px}
+header p{margin-top:8px;font-size:16px}
+
+/* ===== NAV ===== */
+.nav{
+  max-width:1100px;
+  margin:-25px auto 20px;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
+}
+.nav button{
+  border:none;
+  padding:12px 26px;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.3s;
+  color:white;
+}
+.back{background:#64748b}
+.home{background:#22c55e}
+.next{background:#fb7185}
+.nav button:hover{
+  transform:translateY(-4px);
+  box-shadow:0 15px 30px rgba(0,0,0,.25);
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 20px;
+}
+
+/* ===== STATS ===== */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:25px;
+  margin-bottom:30px;
+}
+.stat{
+  background:white;
+  padding:25px;
+  border-radius:18px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.12);
+  transition:.3s;
+}
+.stat:hover{transform:translateY(-6px)}
+.stat h2{
+  margin:0;
+  font-size:36px;
+  background:linear-gradient(135deg,#38bdf8,#fb7185);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* ===== TABLE ===== */
+.card{
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 25px 50px rgba(0,0,0,.15);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+th,td{
+  padding:14px;
+  border-bottom:1px solid #e5e7eb;
+}
+th{
+  background:#f8fafc;
+  text-align:left;
+}
+tr:hover{background:#fef2f2}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("role")!=="admin"){
+  alert("Akses ditolak");
+  location.href="index.html";
+}
+const orders=JSON.parse(localStorage.getItem("orders"))||[];
+</script>
+
+<header>
+  <h1>📊 Laporan Penjualan</h1>
+  <p>Rekap transaksi MINUMSHOP</p>
+</header>
+
+<div class="nav">
+  <button class="back" onclick="location.href='product-admin.html'">⬅ Produk</button>
+  <button class="home" onclick="location.href='index.html'">🏠 Dashboard</button>
+  <button class="next" onclick="location.href='about.html'">➡ Tentang</button>
+</div>
+
+<div class="container">
+
+  <div class="stats">
+    <div class="stat">
+      <h2 id="totalOrder">0</h2>
+      <p>Total Pesanan</p>
+    </div>
+    <div class="stat">
+      <h2 id="totalItem">0</h2>
+      <p>Total Item Terjual</p>
+    </div>
+    <div class="stat">
+      <h2 id="totalOmzet">Rp 0</h2>
+      <p>Total Omzet</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📦 Detail Pesanan</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>User</th>
+          <th>Item</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+let totalOrder=orders.length;
+let totalItem=0;
+let totalOmzet=0;
+const rows=document.getElementById("rows");
+
+orders.forEach(o=>{
+  totalOmzet+=o.total;
+  let itemText="";
+  o.items.forEach(i=>{
+    totalItem+=i.qty;
+    itemText+=`${i.nama} x ${i.qty}<br>`;
+  });
+  rows.innerHTML+=`
+  <tr>
+    <td>${o.tanggal}</td>
+    <td>${o.user}</td>
+    <td>${itemText}</td>
+    <td>Rp ${o.total}</td>
+  </tr>`;
+});
+
+document.getElementById("totalOrder").innerText=totalOrder;
+document.getElementById("totalItem").innerText=totalItem;
+document.getElementById("totalOmzet").innerText="Rp "+totalOmzet;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+<script>
+if (
+  localStorage.getItem("loggedIn") !== "true" ||
+  localStorage.getItem("role") !== "buyer"
+) {
+  location.href = "login.html";
+}
+</script>

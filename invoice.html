@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Invoice | MINUMSHOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:Poppins;
+  background:#f8fafc;
+  padding:20px
+}
+.invoice{
+  max-width:800px;
+  margin:auto;
+  background:white;
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 15px 35px rgba(0,0,0,.1)
+}
+h2{text-align:center;margin-bottom:5px}
+small{text-align:center;display:block;color:#64748b}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left
+}
+th{background:#fff7ed}
+
+.total{
+  text-align:right;
+  font-weight:700;
+  margin-top:10px;
+  font-size:16px
+}
+
+/* BUTTON */
+.btn{
+  padding:12px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  width:100%
+}
+.print{background:#16a34a;color:white}
+.back{background:#fb923c;color:white}
+.riwayat{background:#0ea5e9;color:white}
+.logout{background:#ef4444;color:white}
+
+/* NAV GRID */
+.nav{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin-top:25px
+}
+
+/* PRINT */
+@media print{
+  body{background:white;padding:0}
+  .nav,.print{display:none}
+  .invoice{box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+
+<div class="invoice" id="inv"></div>
+
+<script>
+/* ===== AUTH ===== */
+if(localStorage.getItem("role")!=="buyer"){
+  alert("Akses ditolak");
+  location.href="login.html";
+}
+
+/* ===== AMBIL INVOICE TERAKHIR ===== */
+const invoices = JSON.parse(localStorage.getItem("invoices")) || [];
+const data = invoices[invoices.length-1];
+
+if(!data){
+  alert("Invoice tidak ditemukan");
+  location.href="product-buyer.html";
+}
+
+/* ===== RENDER INVOICE ===== */
+let html=`
+<h2>🧾 INVOICE MINUMSHOP</h2>
+<small>${data.tanggal}</small>
+
+<p><b>Pembeli:</b> ${data.user}</p>
+<p><b>Metode:</b> ${data.metode.toUpperCase()}</p>
+
+<table>
+<tr>
+  <th>Produk</th>
+  <th>Qty</th>
+  <th>Subtotal</th>
+</tr>
+`;
+
+data.cart.forEach(p=>{
+  html+=`
+  <tr>
+    <td>${p.nama}</td>
+    <td>${p.qty}</td>
+    <td>Rp ${p.qty*p.harga}</td>
+  </tr>`;
+});
+
+html+=`
+</table>
+
+<p class="total">Total Bayar: Rp ${data.grand}</p>
+`;
+
+if(data.bayar){
+  html+=`
+  <p class="total">Uang Dibayar: Rp ${data.bayar}</p>
+  <p class="total">Kembalian: Rp ${data.kembalian}</p>
+  `;
+}
+
+/* ===== NAVIGATION ===== */
+html+=`
+<button class="btn print" onclick="window.print()">🖨 Cetak / Simpan PDF</button>
+
+<div class="nav">
+  <button class="btn back" onclick="location.href='product-buyer.html'">
+    ⬅ Kembali Belanja
+  </button>
+
+  <button class="btn riwayat" onclick="location.href='riwayat.html'">
+    📦 Riwayat Pesanan
+  </button>
+
+  <button class="btn logout" onclick="logout()">
+    🚪 Logout
+  </button>
+</div>
+`;
+
+document.getElementById("inv").innerHTML = html;
+
+/* ===== LOGOUT ===== */
+function logout(){
+  if(confirm("Yakin ingin logout?")){
+    localStorage.clear();
+    location.href="login.html";
+  }
+}
+</script>
+
+</body>
+</html>

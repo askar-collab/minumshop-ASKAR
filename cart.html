@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Keranjang | MINUMSHOP</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8fafc;
+}
+
+/* NAVBAR */
+nav {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,.15);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo img { width: 42px; }
+.logo span {
+  font-family: 'Pacifico', cursive;
+  font-size: 28px;
+  color: white;
+}
+.menu a {
+  margin-left: 22px;
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 50px 20px 30px;
+}
+.header h1 {
+  font-size: 36px;
+}
+.header p {
+  color: #475569;
+}
+
+/* CART */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.1);
+}
+
+.cart-item img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.cart-info {
+  flex: 1;
+  margin-left: 16px;
+}
+
+.cart-info h3 {
+  font-size: 18px;
+}
+
+.cart-info p {
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.cart-item button {
+  background: #ef4444;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.total {
+  text-align: right;
+  margin-top: 30px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.checkout-btn {
+  margin-top: 16px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 18px;
+  border: none;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 60px;
+  padding: 26px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+if (localStorage.getItem("role") !== "buyer") location.href = "login.html";
+</script>
+
+<nav>
+  <div class="logo">
+    <img src="logo.png">
+    <span>MINUMSHOP</span>
+  </div>
+  <div class="menu">
+    <a href="buyer.html">Home</a>
+    <a href="product.html">Produk</a>
+    <a href="cart.html">Keranjang</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+</nav>
+
+<div class="header">
+  <h1>Keranjang Belanja 🛒</h1>
+  <p>Periksa kembali pesananmu</p>
+</div>
+
+<div class="container">
+  <div id="cartItems"></div>
+  <div class="total" id="totalHarga">Total: Rp 0</div>
+  <button class="checkout-btn" onclick="checkout()">Checkout</button>
+</div>
+
+<footer>© 2026 MINUMSHOP</footer>
+
+<script src="auth.js"></script>
+<script src="cart.js"></script>
+</body>
+</html>
